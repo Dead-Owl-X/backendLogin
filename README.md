@@ -1,5 +1,3 @@
-# node-mssql-registration-login-api
+# Proyecto de la materia Sistemas Distribuidos
 
-Node.js + MS SQL Server - Simple API for Authentication, Registration and User Management
-
-Documentation coming soon!!
+Este repositorio contiene el proyecto de la materia **Sistemas Distribuidos**.
