@@ -9,12 +9,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// api routes
+//rutas de la api
 app.use('/users', require('./users/users.controller'));
 
-// global error handler
+//manejo de errores
 app.use(errorHandler);
 
-// start server
+//arranca el servidor
 const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
 app.listen(port, () => console.log('Server listening on port ' + port));
