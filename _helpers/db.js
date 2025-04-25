@@ -1,51 +1,23 @@
-const tedious = require('tedious');
 const { Sequelize } = require('sequelize');
 
-const { dbName, dbConfig } = require('config.json');
+const { dbName, dbConfig } = require('../config.json'); // Asegúrate de que la ruta sea correcta
 
 module.exports = db = {};
 
 initialize();
 
 async function initialize() {
-    const dialect = 'mssql';
-    const host = dbConfig.server;
-    const { userName, password } = dbConfig.authentication.options;
+    const dialect = 'mysql';
+    const host = dbConfig.server; // Cambia "server" por "host" si es necesario
+    const user = dbConfig.userName; // Ajustado para coincidir con config.json
+    const password = dbConfig.password;
 
-    // create db if it doesn't already exist
-    await ensureDbExists(dbName);
+    // Conectar a la base de datos
+    const sequelize = new Sequelize(dbName, user, password, { host, dialect });
 
-    // connect to db
-    const sequelize = new Sequelize(dbName, userName, password, { host, dialect });
-
-    // init models and add them to the exported db object
+    // Inicializar modelos y agregarlos al objeto exportado db
     db.User = require('../users/user.model')(sequelize);
 
-    // sync all models with database
+    // Sincronizar todos los modelos con la base de datos
     await sequelize.sync({ alter: true });
-}
-
-async function ensureDbExists(dbName) {
-    return new Promise((resolve, reject) => {
-        const connection = new tedious.Connection(dbConfig);
-        connection.connect((err) => {
-            if (err) {
-                console.error(err);
-                reject(`Connection Failed: ${err.message}`);
-            }
-
-            const createDbQuery = `IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '${dbName}') CREATE DATABASE [${dbName}];`;
-            const request = new tedious.Request(createDbQuery, (err) => {
-                if (err) {
-                    console.error(err);
-                    reject(`Create DB Query Failed: ${err.message}`);
-                }
-
-                // query executed successfully
-                resolve();
-            });
-
-            connection.execSql(request);
-        });
-    });
 }
